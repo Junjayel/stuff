@@ -7,16 +7,19 @@
 #include <stdio.h>
 #include <limits.h>
 
+# define MAXPROCESSNO 10
 int main() {
     int i = 0, j = 0, numProcesses = 0, timeSlice = 0, maxBurstTime = 0, temp = 0;
-    int burstTime[10], backupBurstTime[10], waitTime[10], turnAroundTime[10],
-      responseTime[10];
+    int burstTime[MAXPROCESSNO], backupBurstTime[MAXPROCESSNO], waitTime[MAXPROCESSNO], turnAroundTime[MAXPROCESSNO],
+      responseTime[MAXPROCESSNO];
 
+    for(int i=0; i<MAXPROCESSNO; i++) waitTime[i] = 0;
+    
     float avgWaitTime = 0.0, avgTurnAroundTime = 0.0, avgResponseTime = 0.0;
 
     int max_burst = 0, min_burst = INT_MAX;
 
-    printf("\t CPU Scheduling Method: Round Robin \n");
+    printf("\t CPU Scheduling Method: Optimal Round Robin (ORR)\n");
     printf("\n\t Enter the no of processes: ");
     scanf("%d", & numProcesses);
 
@@ -35,16 +38,24 @@ int main() {
 
     // RR process
     maxBurstTime = burstTime[0];
+
+    // calculate worst case how many times to loop
     for (i = 1; i < numProcesses; i++) {
       if (maxBurstTime < burstTime[i])
         maxBurstTime = burstTime[i];
     }
+
     for (j = 0; j < (maxBurstTime / timeSlice) + 1; j++) {
       for (i = 0; i < numProcesses; i++) {
+        // if the process is not finished
         if (burstTime[i] != 0) {
+          // if the process is ran for the first time
             if (burstTime[i] == backupBurstTime[i])
                 responseTime[i] = temp;
+
           if (burstTime[i] <= timeSlice) {
+
+              // add the time spent on this process to the wait time of the other processes
               for (int l = 0; l < numProcesses; l++){
                 if (l != i && burstTime[l] != 0)
                     waitTime[l] += burstTime[i];
